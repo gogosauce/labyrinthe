@@ -29,96 +29,71 @@ public class Grid {
 		ArrayList<Case> leftWalls = new ArrayList<Case>();
 		for ( int x = 0; x < height; x++) {
 			for (int y = 0; y < width; y++) {
-				leftWalls.add(maze[x][y]);
+				if(maze[x][y].getWallEast() == Case.Wall.Close && maze[x][y].getWallSouth() == Case.Wall.Close){
+					leftWalls.add(new Case(x, y, maze[x][y].getVal()));
+					leftWalls.get(leftWalls.size()-1).setWallSouth(null);
+					
+					leftWalls.add(new Case(x, y, maze[x][y].getVal()));
+					leftWalls.get(leftWalls.size()-1).setWallEast(null);
+				}
+				else{
+					if(maze[x][y].getWallEast() == Case.Wall.Close){
+						leftWalls.add(new Case(x, y, maze[x][y].getVal()));
+						leftWalls.get(leftWalls.size()-1).setWallSouth(Case.Wall.Edge);
+
+						}
+					if(maze[x][y].getWallSouth() == Case.Wall.Close){
+						leftWalls.add(new Case(x, y, maze[x][y].getVal()));
+						leftWalls.get(leftWalls.size()-1).setWallEast(Case.Wall.Edge);
+					}
+				}
 			}			
 		}
-
-		while (isMerged(maze) == false){
+//		for ( int x = 0; x < leftWalls.size(); x++) {
+//			System.out.println("X: "+leftWalls.get(x).getX());
+//			System.out.println("Y: "+leftWalls.get(x).getY());
+//			System.out.println("East wall: "+leftWalls.get(x).getWallEast());
+//			System.out.println("South wall: "+leftWalls.get(x).getWallSouth()+"\n");
+//		}
+		while (isMerged(maze) == false && leftWalls.size() > 1){
+			System.out.println("How many walls left? "+leftWalls.size());
 			//pick up random case
-			int caseId = (int)Math.round( Math.random()*( leftWalls.size() - 2));
-			System.out.println("caseId: "+caseId);
-			Case randomArrayCase =leftWalls.get(caseId);  
+			int caseId = (int)Math.round( Math.random()*( leftWalls.size() - 1));
+			Case randomArrayCase =leftWalls.get(caseId);			
 			Case mazeCase = this.getCase( randomArrayCase.getX(), randomArrayCase.getY());
-			System.out.println("mazeCase x: "+mazeCase.getX()+" y: "+mazeCase.getY());
-			//pick up random wall
-			boolean isWallChoose = false;
-			if( isCaseOpen( mazeCase) == true){
-				leftWalls.remove(caseId);				
-				isWallChoose = true;
-				System.out.println("case removed\n");
-			}
-			while( isWallChoose == false){
-				//				TODO affiner pick up random
-				int chooseWall=(int) Math.round(Math.random()*3);						
 
-				switch (chooseWall) {				
-				case 0:	//south
-					if ( mazeCase.getX() < this.getHeight()-1){
-						Case southCase = this.getCase(mazeCase.getX()+1, mazeCase.getY());					
-						if( mazeCase.getWallSouth() == Case.Wall.Close && mazeCase.getVal() != southCase.getVal()) {						
-							if ( mazeCase.getVal()> southCase.getVal()) {
-								this.setValPath(southCase.getVal(), mazeCase.getVal());
-							}
-							else {
-								this.setValPath(southCase.getVal(), mazeCase.getVal());
-							}
-							System.out.println("open south\n");
-							mazeCase.setWallSouth(Case.Wall.Open);
-						}
-						isWallChoose = true;
+			System.out.println("caseId: "+caseId);
+			System.out.println("East: "+randomArrayCase.getWallEast()+" South: "+randomArrayCase.getWallSouth());
+			System.out.println("mazeCase x: "+mazeCase.getX()+" y: "+mazeCase.getY());
+
+			//pick up random wall
+			if(randomArrayCase.getWallSouth() == Case.Wall.Close){
+				Case southCase = this.getCase(mazeCase.getX()+1, mazeCase.getY());					
+				if(mazeCase.getVal() != southCase.getVal()) {						
+					if ( mazeCase.getVal()> southCase.getVal()) {
+						this.setValPath(southCase.getVal(), mazeCase.getVal());
 					}
-					break;					
-				case 1: //west
-					if ( mazeCase.getY() > 0){
-						Case westCase = this.getCase(mazeCase.getX(), mazeCase.getY()-1);
-						if( westCase.getWallEast() == Case.Wall.Close && mazeCase.getVal() != westCase.getVal()){
-							if( mazeCase.getVal() > westCase.getVal()){								
-								this.setValPath(mazeCase.getVal(), westCase.getVal());
-							}							
-							else {
-								this.setValPath(westCase.getVal(), mazeCase.getVal());
-							}
-							westCase.setWallEast(Case.Wall.Open);
-							System.out.println("open west\n");
-						}
-						isWallChoose = true;
+					else {
+						this.setValPath(southCase.getVal(), mazeCase.getVal());
 					}
-					break;					
-				case 2: //north
-					if ( mazeCase.getX() > 0 ) {
-						Case northCase = this.getCase(mazeCase.getX()-1, mazeCase.getY());
-						if( northCase.getWallSouth() == Case.Wall.Close && mazeCase.getVal() != northCase.getVal()){							
-							if( mazeCase.getVal() > northCase.getVal()){								
-								this.setValPath(mazeCase.getVal(), northCase.getVal());
-							}							
-							else {
-								this.setValPath(northCase.getVal(), mazeCase.getVal());
-							}
-							northCase.setWallSouth(Case.Wall.Open);
-							System.out.println("open north\n");
-						}						
-						isWallChoose = true;
+					mazeCase.setWallSouth(Case.Wall.Open);
+				}
+				leftWalls.remove(caseId);
+				System.out.println("CASE REMOVED"+"\n");
+			}
+			else{
+				Case eastCase = this.getCase(mazeCase.getX(), mazeCase.getY()+1);
+				if (mazeCase.getVal() != eastCase.getVal()) {							
+					if (mazeCase.getVal() > eastCase.getVal()) {					
+						this.setValPath(mazeCase.getVal(), eastCase.getVal());
 					}
-					break;					
-				case 3: //east
-					if (mazeCase.getY() < this.getWidth()-1){
-						Case eastCase = this.getCase(mazeCase.getX(), mazeCase.getY()+1);
-						if (randomArrayCase.getWallEast() == Case.Wall.Close && mazeCase.getVal() != eastCase.getVal()) {							
-							if (mazeCase.getVal() > eastCase.getVal()) {					
-								this.setValPath(mazeCase.getVal(), eastCase.getVal());
-							}
-							else {
-								this.setValPath(eastCase.getVal(), mazeCase.getVal());
-							}
-							mazeCase.setWallEast(Case.Wall.Open);
-							System.out.println("open east\n");
-						}
-						isWallChoose = true;
+					else {
+						this.setValPath(eastCase.getVal(), mazeCase.getVal());
 					}
-					break;
-				default:
-					System.out.println("erreur switch");
-				}				
+					mazeCase.setWallEast(Case.Wall.Open);
+				}
+				leftWalls.remove(caseId);
+				System.out.println("CASE REMOVED"+"\n");
 			}
 		}
 		displayMaze(maze);
