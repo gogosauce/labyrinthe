@@ -1,19 +1,20 @@
 import java.util.ArrayList;
 import java.util.Random;
 
-
 public class Grid {
 	private Case[][] maze;
 	private int height, width;
 	public int val = 0;
+	private Case player;
+
 
 	public Grid(){
-		this(20, 20);
+		this(5, 5);
 	}
 
 	public Grid(int height, int width){
 		this.height = height;
-		this.width = width;
+		this.width = width;		
 		maze=new Case[height][width];		
 		for (int i=0; i<height; i++){
 			for (int j=0; j<width; j++){
@@ -21,6 +22,7 @@ public class Grid {
 				maze[i][j]=new Case(i, j, val);
 			}
 		}
+		player = maze[height-1][width/2];
 	}
 
 
@@ -32,7 +34,7 @@ public class Grid {
 				if(maze[x][y].getWallEast() == Case.Wall.Close && maze[x][y].getWallSouth() == Case.Wall.Close){
 					leftWalls.add(new Case(x, y, maze[x][y].getVal()));
 					leftWalls.get(leftWalls.size()-1).setWallSouth(null);
-					
+
 					leftWalls.add(new Case(x, y, maze[x][y].getVal()));
 					leftWalls.get(leftWalls.size()-1).setWallEast(null);
 				}
@@ -41,7 +43,7 @@ public class Grid {
 						leftWalls.add(new Case(x, y, maze[x][y].getVal()));
 						leftWalls.get(leftWalls.size()-1).setWallSouth(Case.Wall.Edge);
 
-						}
+					}
 					if(maze[x][y].getWallSouth() == Case.Wall.Close){
 						leftWalls.add(new Case(x, y, maze[x][y].getVal()));
 						leftWalls.get(leftWalls.size()-1).setWallEast(Case.Wall.Edge);
@@ -49,22 +51,13 @@ public class Grid {
 				}
 			}			
 		}
-//		for ( int x = 0; x < leftWalls.size(); x++) {
-//			System.out.println("X: "+leftWalls.get(x).getX());
-//			System.out.println("Y: "+leftWalls.get(x).getY());
-//			System.out.println("East wall: "+leftWalls.get(x).getWallEast());
-//			System.out.println("South wall: "+leftWalls.get(x).getWallSouth()+"\n");
-//		}
+
 		while (isMerged(maze) == false && leftWalls.size() > 1){
-			System.out.println("How many walls left? "+leftWalls.size());
+
 			//pick up random case
 			int caseId = (int)Math.round( Math.random()*( leftWalls.size() - 1));
 			Case randomArrayCase =leftWalls.get(caseId);			
 			Case mazeCase = this.getCase( randomArrayCase.getX(), randomArrayCase.getY());
-
-			System.out.println("caseId: "+caseId);
-			System.out.println("East: "+randomArrayCase.getWallEast()+" South: "+randomArrayCase.getWallSouth());
-			System.out.println("mazeCase x: "+mazeCase.getX()+" y: "+mazeCase.getY());
 
 			//pick up random wall
 			if(randomArrayCase.getWallSouth() == Case.Wall.Close){
@@ -79,7 +72,6 @@ public class Grid {
 					mazeCase.setWallSouth(Case.Wall.Open);
 				}
 				leftWalls.remove(caseId);
-				System.out.println("CASE REMOVED"+"\n");
 			}
 			else{
 				Case eastCase = this.getCase(mazeCase.getX(), mazeCase.getY()+1);
@@ -93,7 +85,6 @@ public class Grid {
 					mazeCase.setWallEast(Case.Wall.Open);
 				}
 				leftWalls.remove(caseId);
-				System.out.println("CASE REMOVED"+"\n");
 			}
 		}
 		displayMaze(maze);
@@ -122,13 +113,6 @@ public class Grid {
 			}
 			System.out.println("");
 		}
-	}
-
-	private boolean isCaseOpen(Case mazeCase) {
-		if(mazeCase.getWallSouth() != Case.Wall.Close && mazeCase.getWallEast() != Case.Wall.Close){
-			return true;
-		}
-		return false;
 	}
 
 	public void setValPath(int lastVal, int newVal ){
@@ -187,6 +171,49 @@ public class Grid {
 	public void setWidth(int width) {
 		this.width = width;
 	}
+	public void initPorte(){
+		this.getCase(0, this.height/2).setPorte(2);
+		this.getCase(this.width-1, this.height/2).setPorte(1);
+	}
+	public void setPlayer(int x, int y){
+		player.setX(x);
+		player.setY(y);
+	}
+	public Case getPlayer() {
+		return player;
+	}
 
-
+	public boolean isPathOpen(int direction){
+		switch (direction){
+		//south
+		case 1:
+			if (this.getPlayer().getX() < this.height-1 && this.getPlayer().getWallSouth() == Case.Wall.Open){
+				return true;
+			}
+			break;
+			//east
+		case 2:
+			if (this.getPlayer().getY() > 0){
+				if(this.getCase(getPlayer().getX(), getPlayer().getY()-1).getWallEast() == Case.Wall.Open){
+					return true;
+				}
+			}
+			break;	
+			//north
+		case 3:
+			if (this.getPlayer().getX() > 0){
+				if(this.getCase(getPlayer().getX()-1, getPlayer().getY()).getWallEast() == Case.Wall.Open){
+					return true;
+				}
+			}
+			break;
+			//west
+		case 4:
+			if (this.getPlayer().getY() < this.width-1 && this.getPlayer().getWallEast() == Case.Wall.Open){
+				return true;
+			}
+			break;
+		}
+		return false;
+	}
 }
