@@ -1,16 +1,8 @@
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Frame;
 import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.sql.Ref;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JOptionPane;
+
 
 
 /**
@@ -37,7 +29,7 @@ public class CaseGraphics extends JComponent {
 		super.paintComponent(g);
 
 		g.drawImage(new ImageIcon("open.png").getImage(), 0, 0, null);
-		
+
 		if(idCase.getWallSouth() != Case.Wall.Open && idCase.getWallEast() != Case.Wall.Open){					
 			g.drawImage(new ImageIcon("corner_bot_right.png").getImage(), 0, 0, null);
 		}
@@ -47,12 +39,11 @@ public class CaseGraphics extends JComponent {
 		if(idCase.getWallSouth() == Case.Wall.Open && idCase.getWallEast() != Case.Wall.Open){
 			g.drawImage(new ImageIcon("East.png").getImage(), 0, 0, null);
 		}
-		
+
 	}
 
 	public int getWidth() {
 		return this.width;
 	}
-
 
 }
