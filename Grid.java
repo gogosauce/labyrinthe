@@ -1,5 +1,4 @@
 import java.util.ArrayList;
-import java.util.Random;
 
 public class Grid {
 	private Case[][] maze;
@@ -9,7 +8,7 @@ public class Grid {
 
 
 	public Grid(){
-		this(5, 5);
+		this(20, 20);
 	}
 
 	public Grid(int height, int width){
@@ -23,6 +22,8 @@ public class Grid {
 			}
 		}
 		player = maze[height-1][width/2];
+		maze[height-1][width/2].setPlayer(true);
+		maze[height-1][width/2].setDiscovered(true);
 	}
 
 
@@ -187,30 +188,34 @@ public class Grid {
 		switch (direction){
 		//south
 		case 1:
-			if (this.getPlayer().getX() < this.height-1 && this.getPlayer().getWallSouth() == Case.Wall.Open){
-				return true;
+			if (this.getPlayer().getX() < this.height-1){
+				if(this.getCase(getPlayer().getX(), getPlayer().getY()).getWallSouth() == Case.Wall.Open){
+					return true;
+				}
 			}
 			break;
-			//east
+			//west
 		case 2:
 			if (this.getPlayer().getY() > 0){
 				if(this.getCase(getPlayer().getX(), getPlayer().getY()-1).getWallEast() == Case.Wall.Open){
-					return true;
+					return true;					
 				}
 			}
 			break;	
 			//north
 		case 3:
 			if (this.getPlayer().getX() > 0){
-				if(this.getCase(getPlayer().getX()-1, getPlayer().getY()).getWallEast() == Case.Wall.Open){
+				if(this.getCase(getPlayer().getX()-1, getPlayer().getY()).getWallSouth() == Case.Wall.Open){
 					return true;
 				}
 			}
 			break;
-			//west
+			//east
 		case 4:
-			if (this.getPlayer().getY() < this.width-1 && this.getPlayer().getWallEast() == Case.Wall.Open){
-				return true;
+			if (this.getPlayer().getY() < this.width-1){
+				if(this.getCase(getPlayer().getX(), getPlayer().getY()).getWallEast() == Case.Wall.Open){
+					return true;
+				}
 			}
 			break;
 		}
