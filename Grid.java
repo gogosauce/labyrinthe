@@ -8,7 +8,7 @@ public class Grid {
 
 
 	public Grid(){
-		this(20, 20);
+		this(4, 4);
 	}
 
 	public Grid(int height, int width){
@@ -21,43 +21,37 @@ public class Grid {
 				maze[i][j]=new Case(i, j, val);
 			}
 		}
-		player = maze[height-1][width/2];
-		maze[height-1][width/2].setPlayer(true);
-		maze[height-1][width/2].setDiscovered(true);
+		initGate();
 	}
 
-
 	public void openedWall(){
-		//		Cases avec des murs fermés
-		ArrayList<Case> leftWalls = new ArrayList<Case>();
+		ArrayList<Case> wallsClosed = new ArrayList<Case>();
 		for ( int x = 0; x < height; x++) {
 			for (int y = 0; y < width; y++) {
 				if(maze[x][y].getWallEast() == Case.Wall.Close && maze[x][y].getWallSouth() == Case.Wall.Close){
-					leftWalls.add(new Case(x, y, maze[x][y].getVal()));
-					leftWalls.get(leftWalls.size()-1).setWallSouth(null);
-
-					leftWalls.add(new Case(x, y, maze[x][y].getVal()));
-					leftWalls.get(leftWalls.size()-1).setWallEast(null);
+					wallsClosed.add(new Case(x, y, maze[x][y].getVal()));
+					wallsClosed.get(wallsClosed.size()-1).setWallSouth(null);
+					wallsClosed.add(new Case(x, y, maze[x][y].getVal()));
+					wallsClosed.get(wallsClosed.size()-1).setWallEast(null);
 				}
 				else{
 					if(maze[x][y].getWallEast() == Case.Wall.Close){
-						leftWalls.add(new Case(x, y, maze[x][y].getVal()));
-						leftWalls.get(leftWalls.size()-1).setWallSouth(Case.Wall.Edge);
-
+						wallsClosed.add(new Case(x, y, maze[x][y].getVal()));
+						wallsClosed.get(wallsClosed.size()-1).setWallSouth(Case.Wall.Edge);
 					}
 					if(maze[x][y].getWallSouth() == Case.Wall.Close){
-						leftWalls.add(new Case(x, y, maze[x][y].getVal()));
-						leftWalls.get(leftWalls.size()-1).setWallEast(Case.Wall.Edge);
+						wallsClosed.add(new Case(x, y, maze[x][y].getVal()));
+						wallsClosed.get(wallsClosed.size()-1).setWallEast(Case.Wall.Edge);
 					}
 				}
 			}			
 		}
 
-		while (isMerged(maze) == false && leftWalls.size() > 1){
+		while (isMerged(maze) == false && wallsClosed.size() > 1){
 
 			//pick up random case
-			int caseId = (int)Math.round( Math.random()*( leftWalls.size() - 1));
-			Case randomArrayCase =leftWalls.get(caseId);			
+			int caseId = (int)Math.round( Math.random()*( wallsClosed.size() - 1));
+			Case randomArrayCase =wallsClosed.get(caseId);			
 			Case mazeCase = this.getCase( randomArrayCase.getX(), randomArrayCase.getY());
 
 			//pick up random wall
@@ -72,7 +66,7 @@ public class Grid {
 					}
 					mazeCase.setWallSouth(Case.Wall.Open);
 				}
-				leftWalls.remove(caseId);
+				wallsClosed.remove(caseId);
 			}
 			else{
 				Case eastCase = this.getCase(mazeCase.getX(), mazeCase.getY()+1);
@@ -85,34 +79,8 @@ public class Grid {
 					}
 					mazeCase.setWallEast(Case.Wall.Open);
 				}
-				leftWalls.remove(caseId);
+				wallsClosed.remove(caseId);
 			}
-		}
-		displayMaze(maze);
-	}
-
-
-	private void displayMaze(Case[][] maze){
-		for (int x = 0; x < height; x++) {
-			for (int y = 0; y < width; y++) {
-				if(maze[x][y].getWallSouth() == Case.Wall.Open && maze[x][y].getWallEast() == Case.Wall.Open){				
-					//					System.out.println("   ");
-					System.out.print("   ");
-				}
-				if((maze[x][y].getWallSouth() == Case.Wall.Close || maze[x][y].getWallSouth() == Case.Wall.Edge) && maze[x][y].getWallEast() == Case.Wall.Open){
-					//					System.out.print("   ");
-					System.out.print("___");
-				}
-				if(maze[x][y].getWallSouth() == Case.Wall.Open && (maze[x][y].getWallEast() == Case.Wall.Close || maze[x][y].getWallEast() == Case.Wall.Edge)){
-					System.out.print("  |");
-					//					System.out.print("   ");
-				}
-				if((maze[x][y].getWallSouth() == Case.Wall.Close || maze[x][y].getWallSouth() == Case.Wall.Edge) && (maze[x][y].getWallEast() == Case.Wall.Close || maze[x][y].getWallEast() == Case.Wall.Edge)){
-					//					System.out.print("  ");
-					System.out.print("__|");
-				}			
-			}
-			System.out.println("");
 		}
 	}
 
@@ -125,7 +93,6 @@ public class Grid {
 			}
 		}
 	}
-
 
 	public boolean isMerged(Case[][] maze){
 		for (int x = 0; x < height; x++) {
@@ -153,35 +120,21 @@ public class Grid {
 		}
 	}
 
-	public Case getCase(int x, int y){
-		return maze[x][y];
-	}
-
-	public int getHeight() {
-		return height;
-	}
-
-	public void setHeight(int height) {
-		this.height = height;
-	}
-
-	public int getWidth() {
-		return width;
-	}
-
-	public void setWidth(int width) {
-		this.width = width;
-	}
-	public void initPorte(){
-		this.getCase(0, this.height/2).setPorte(2);
-		this.getCase(this.width-1, this.height/2).setPorte(1);
-	}
-	public void setPlayer(int x, int y){
-		player.setX(x);
-		player.setY(y);
-	}
-	public Case getPlayer() {
-		return player;
+	public void initGate(){
+		player = maze[height-1][width/2];
+		maze[height-1][width/2].setPlayer(true);
+		maze[height-1][width/2].setDiscovered(true);
+		maze[0][width/2].setDiscovered(true); 
+		maze[0][width/2].setGate(Case.Gate.Close);
+		boolean keyChoose = false;
+		while(keyChoose == false){
+			int x= (int)Math.round(Math.random()*(this.height-1));
+			int y= (int)Math.round(Math.random()*(this.width-1));
+			if(x != 0 && y != width/2 || x != height-1 && y != width/2 ){
+					maze[x][y].setKey(true);
+					keyChoose = true;
+			}
+		}
 	}
 
 	public boolean isPathOpen(int direction){
@@ -205,7 +158,7 @@ public class Grid {
 			//north
 		case 3:
 			if (this.getPlayer().getX() > 0){
-				if(this.getCase(getPlayer().getX()-1, getPlayer().getY()).getWallSouth() == Case.Wall.Open){
+				if(this.getCase(getPlayer().getX()-1, getPlayer().getY()).getWallSouth() == Case.Wall.Open ){
 					return true;
 				}
 			}
@@ -220,5 +173,34 @@ public class Grid {
 			break;
 		}
 		return false;
+	}
+
+
+	public Case getCase(int x, int y){
+		return maze[x][y];
+	}
+
+	public int getHeight() {
+		return height;
+	}
+
+	public void setHeight(int height) {
+		this.height = height;
+	}
+
+	public int getWidth() {
+		return width;
+	}
+
+	public void setWidth(int width) {
+		this.width = width;
+	}
+
+	public void setPlayer(int x, int y){
+		player.setX(x);
+		player.setY(y);
+	}
+	public Case getPlayer() {
+		return player;
 	}
 }
