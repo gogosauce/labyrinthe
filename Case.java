@@ -3,8 +3,9 @@ public class Case {
 	private Wall wallSouth;
 	private Wall wallEast;
 	private Wall wallWest;
-	int x, y, val, porte;
-	boolean player, discovered;	
+	private Gate gate;
+	int x, y, val;
+	boolean player, discovered, key;	
 	
 
 	public Case(int x, int y, int val){
@@ -15,7 +16,7 @@ public class Case {
 		this.wallSouth = Wall.Close;
 		this.player = false;
 		this.discovered = false;
-
+		
 	}
 	
 	public enum Wall{
@@ -23,7 +24,25 @@ public class Case {
 		Close,		
 		Edge;	 
 	}
+	public enum Gate{
+		Open, 
+		Close,
+	}
 
+	
+	public boolean isKey() {
+		return key;
+	}
+	public void setKey(boolean key) {
+		this.key = key;
+	}
+
+	public Gate getGate() {
+		return gate;
+	}
+	public void setGate(Gate gate) {
+		this.gate = gate;
+	}
 	public Wall getWallNorth() {
 		return wallNorth;
 	}
@@ -65,12 +84,6 @@ public class Case {
 	}
 	public void setY(int y) {
 		this.y = y;
-	}
-	public int getPorte() {
-		return porte;
-	}
-	public void setPorte(int porte) {
-		this.porte = porte;
 	}
 	public boolean isPlayer() {
 		return player;
