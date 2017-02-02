@@ -1,11 +1,11 @@
-package laby;
-
 public class Case {	
 	private Wall wallNorth;
 	private Wall wallSouth;
 	private Wall wallEast;
 	private Wall wallWest;
-	int x, y, val, porte;	
+	int x, y, val, porte;
+	boolean player, discovered;	
+	
 
 	public Case(int x, int y, int val){
 		this.x = x;
@@ -13,6 +13,8 @@ public class Case {
 		this.val = val;
 		this.wallEast = Wall.Close;
 		this.wallSouth = Wall.Close;
+		this.player = false;
+		this.discovered = false;
 
 	}
 	
@@ -70,4 +72,19 @@ public class Case {
 	public void setPorte(int porte) {
 		this.porte = porte;
 	}
+	public boolean isPlayer() {
+		return player;
+	}
+	public void setPlayer(boolean player) {
+		this.player = player;
+	}
+	
+	public boolean isDiscovered() {
+		return discovered;
+	}
+	public void setDiscovered(boolean discovered) {
+		this.discovered = discovered;
+	}
+	
+	
 }
