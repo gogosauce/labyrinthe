@@ -1,15 +1,9 @@
-import javax.swing.ImageIcon;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
-import javax.swing.JOptionPane;
-import javax.swing.event.*;
 import javax.swing.KeyStroke;
 import java.awt.event.*;
-
-import javax.swing.JOptionPane;
 
 /**
  * Frame intègre toutes les informations liées à la fenêtre d'affichage.
@@ -43,45 +37,47 @@ public class Frame extends JFrame {
 		int height = maze.getHeight();
 		int width = maze.getWidth();		
 		gridGraphics = new CaseGraphics[height][width];
-
 		for (int i=0; i<height; i++){
 			for (int j=0; j<width; j++){
-				gridGraphics[i][j]=new CaseGraphics(maze.getCase(i, j));				
+				gridGraphics[i][j] = new CaseGraphics(maze.getCase(i, j), maze);				
 			}		
 		}
-
 		this.panel = new Panel(gridGraphics);	
 		this.setTitle("Curse of the Maze");
 		this.setVisible(true);
-		this.setSize(width*40 + 16, height*40 + 69);
+		this.setSize(width*40 + 16, height*40 + 59);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setLocationRelativeTo(null);
 		this.setContentPane(panel);
 		this.setVisible(true);
-		//this.setResizable(false); // permet d'empecher le redimensionnement de la fenetre
+		this.setResizable(false); // permet d'empecher le redimensionnement de la fenetre
 		//implementation menu
 
 		this.gameMenu.add(newGame);
 		newGame.addActionListener(new ActionListener(){
 			public void actionPerformed(ActionEvent arg0) {
-				Grid maze = null;
+				gridGraphics[maze.getPlayer().getX()][maze.getPlayer().getY()].getIdCase().setPlayer(false);
 				maze= new Grid();
 				maze.delimiteEdge();
 				maze.openedWall();
+				maze.initPorte();
 				int height = maze.getHeight();
 				int width = maze.getWidth();		
-				gridGraphics = null;
 				gridGraphics = new CaseGraphics[height][width];
-
 				for (int i=0; i<height; i++){
 					for (int j=0; j<width; j++){
-						gridGraphics[i][j]=new CaseGraphics(maze.getCase(i, j));				
+						gridGraphics[i][j] = new CaseGraphics(maze.getCase(i, j), maze);				
 					}		
 				}
-
 				panel = new Panel(gridGraphics);	
+				setTitle("Curse of the Maze");
+				setVisible(true);
+				setSize(width*40 + 16, height*40 + 59);
+				setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+				setLocationRelativeTo(null);
 				setContentPane(panel);
 				setVisible(true);
+				setResizable(false);
 
 				repaint();
 
@@ -129,36 +125,45 @@ public class Frame extends JFrame {
 			}
 			@Override
 			public void keyReleased(KeyEvent e) {
-				switch (e.getKeyCode())
-				{
-				case KeyEvent.VK_DOWN:
+				gridGraphics[maze.getPlayer().getX()][maze.getPlayer().getY()].getIdCase().setPlayer(false);
+				switch (e.getKeyCode()){
+				case KeyEvent.VK_DOWN:					
 					if(maze.isPathOpen(1) == true){
-						maze.setPlayer(maze.getPlayer().getX()+1, maze.getPlayer().getY());
+
+						maze.setPlayer(maze.getPlayer().getX()+1, maze.getPlayer().getY());	
+
 						repaint();
 					}
 					break;
 				case KeyEvent.VK_LEFT:
 					if(maze.isPathOpen(2) == true){
+
 						maze.setPlayer(maze.getPlayer().getX(), maze.getPlayer().getY()-1);
+
 						repaint();
 					}
 					break;
 				case KeyEvent.VK_UP:
 					if(maze.isPathOpen(3) == true){
+
 						maze.setPlayer(maze.getPlayer().getX()-1, maze.getPlayer().getY());
+
 						repaint();
 					}
 					break;
 				case KeyEvent.VK_RIGHT:
 					if(maze.isPathOpen(4) == true){
+
 						maze.setPlayer(maze.getPlayer().getX(), maze.getPlayer().getY()+1);
+
 						repaint();
 					}
 					break;
-				}
-
+				}				
+				gridGraphics[maze.getPlayer().getX()][maze.getPlayer().getY()].getIdCase().setPlayer(true);
+				gridGraphics[maze.getPlayer().getX()][maze.getPlayer().getY()].getIdCase().setDiscovered(true);
 			}
 		});
 	}
-}
 
+}
