@@ -1,8 +1,6 @@
 import java.awt.Graphics;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
-import javax.swing.JOptionPane;
-
 
 
 /**
@@ -18,7 +16,7 @@ public class CaseGraphics extends JComponent {
 	 * @param idCase correspond à une case de la grid
 	 * @param grid	 
 	 */
-	public CaseGraphics ( Case idCase)
+	public CaseGraphics ( Case idCase, Grid maze)
 	{
 		super();
 		this.setSize(width, width);
@@ -26,9 +24,7 @@ public class CaseGraphics extends JComponent {
 	}
 
 	protected void paintComponent (Graphics g)	{
-		super.paintComponent(g);
-
-		g.drawImage(new ImageIcon("open.png").getImage(), 0, 0, null);
+		super.paintComponent(g);	
 
 		if(idCase.getWallSouth() != Case.Wall.Open && idCase.getWallEast() != Case.Wall.Open){					
 			g.drawImage(new ImageIcon("corner_bot_right.png").getImage(), 0, 0, null);
@@ -39,11 +35,22 @@ public class CaseGraphics extends JComponent {
 		if(idCase.getWallSouth() == Case.Wall.Open && idCase.getWallEast() != Case.Wall.Open){
 			g.drawImage(new ImageIcon("East.png").getImage(), 0, 0, null);
 		}
-
+		if(idCase.isPlayer() == true){
+			g.drawImage(new ImageIcon("player.png").getImage(), 0, 0, null);
+		}
+		if(idCase.isDiscovered() == false){
+			g.drawImage(new ImageIcon("fogg.png").getImage(), 0, 0, null);
+		}
 	}
 
 	public int getWidth() {
 		return this.width;
 	}
+
+	public Case getIdCase() {
+		return idCase;
+	}
+
+
 
 }
